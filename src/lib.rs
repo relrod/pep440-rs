@@ -16,7 +16,7 @@
 //!
 //! Currently, the following is implemented:
 //!
-//! * Parsing of version strings
+//! * Parsing of version strings.
 //! * An `is_canonical()` function which can check whether or not a version
 //!   string is in canonical form.
 //! * Tons of tests (copied from `packaging.version`).
