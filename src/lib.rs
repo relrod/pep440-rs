@@ -27,6 +27,7 @@
 extern crate lazy_static;
 
 use regex::{Captures, Regex};
+use std::cmp::Ordering;
 use std::fmt;
 
 lazy_static! {
@@ -398,6 +399,63 @@ impl fmt::Display for Version {
     }
 }
 
+impl PartialOrd for Version {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Version {
+    fn cmp(&self, other: &Self) -> Ordering {
+        // Helper functions
+        // TODO: What's the better way to do this?
+        // What's even the complexity of this, is each collect or into_iter() O(n)? Halp.
+        fn drop_right_zeros(vec: &[u32]) -> Vec<u32> {
+            vec
+                .to_vec()
+                .into_iter()
+                .rev()
+                .skip_while(|x| *x == 0)
+                .collect::<Vec<u32>>()
+                .into_iter()
+                .rev()
+                .collect()
+        }
+
+        // Start with epoch
+        if self.epoch != other.epoch {
+            return self.epoch.cmp(&other.epoch);
+        }
+
+        let me = drop_right_zeros(&self.release);
+        let notme = drop_right_zeros(&other.release);
+        if me != notme {
+            return me.cmp(&notme);
+        }
+
+        // If we're still here, next step is pre-release
+        // Everything else is equal so far.
+        use PreRelease::*;
+
+        // First off, if only one is a pre-release, we're done.
+        match (&self.pre, &other.pre) {
+            (Some(_), None) => return Ordering::Less,
+            (None, Some(_)) => return Ordering::Greater,
+            (Some(pre1), Some(pre2)) => return match (pre1, pre2) {
+                (RC(ref sv), RC(ref ov)) => sv.cmp(ov),
+                (RC(_), _) => Ordering::Greater,
+                (A(ref sv), A(ref ov)) => sv.cmp(ov),
+                (A(_), _) => Ordering::Less,
+                (B(ref sv), B(ref ov)) => sv.cmp(ov),
+                (B(_), A(_)) => Ordering::Greater,
+                (B(_), _) => Ordering::Less,
+            },
+            (None, None) => return Ordering::Equal // TODO
+        }
+    }
+}
+
+
 #[derive(Clone, Eq, PartialEq, Debug)]
 /// Segments of the "local" part of a version (anything after a `+`).
 ///
@@ -422,6 +480,14 @@ impl fmt::Display for LocalVersion {
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 /// The pre-release component of a version, such as `rcN`, `bN`, or `aN`.
+///
+/// We don't implement `Ord` on `PreRelease` because the context (`Versions`)
+/// under consideration matter. In other words, `1.2.3b1 < 1.2.3rc1`, but
+/// `1.2.4b1 > 1.2.3rc1`. If we allowed for comparing `PreReleases` alone, in
+/// the first scenario, we would have `B(1) < RC(1)` and in the second scenario
+/// we would have `B(1) > RC(1)`. So we only implement comparison of
+/// `PreRelease` as part of the definition of comparison of `Version` as a
+/// whole.
 pub enum PreRelease {
     /// Release Candidate
     RC(u32),
@@ -589,5 +655,20 @@ mod tests {
                 expected,
                 normalized);
         }
+    }
+
+    #[test]
+    fn test_comparison() {
+        // We need wayyyyy more test cases here. The upstream python packaging
+        // lib generates them in a clever way from a master list. We could try
+        // to emulate that.
+        assert!(Version::parse("1.2.3").unwrap() < Version::parse("1!0.0.1").unwrap());
+        assert!(Version::parse("1.2.2").unwrap() < Version::parse("1.2.3").unwrap());
+        assert!(Version::parse("1.2.2b1").unwrap() < Version::parse("1.2.2rc1").unwrap());
+        assert!(Version::parse("1.2.2a1").unwrap() < Version::parse("1.2.2b1").unwrap());
+        assert!(Version::parse("1.2.2a1").unwrap() < Version::parse("1.2.2rc1").unwrap());
+        assert!(Version::parse("1.2.3a1").unwrap() < Version::parse("1.2.3").unwrap());
+        assert!(Version::parse("1.2.3a1").unwrap() < Version::parse("1.2.4a1").unwrap());
+        assert!(Version::parse("1.2.3a1").unwrap() < Version::parse("1.2.4").unwrap());
     }
 }
