@@ -17,3 +17,19 @@ jobs:
 
       - name: Run tests
         run: cargo test -- --nocapture
+
+      - name: Build docs
+        run: |
+          cargo rustdoc
+          cat <<EOF > target/doc/index.html
+            <!DOCTYPE html>
+            <meta charset="utf-8">
+            <title>Redirecting to pep440</title>
+            <meta http-equiv="refresh" content="0; URL=./pep440/">
+          EOF
+
+      - name: Deploy docs
+        uses: JamesIves/github-pages-deploy-action@4.0.0
+        with:
+          branch: gh-pages
+          folder: target/doc
