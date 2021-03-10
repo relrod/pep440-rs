@@ -22,10 +22,10 @@ jobs:
         run: |
           cargo rustdoc
           cat <<EOF > target/doc/index.html
-            <!DOCTYPE html>
-            <meta charset="utf-8">
-            <title>Redirecting to pep440</title>
-            <meta http-equiv="refresh" content="0; URL=./pep440/">
+          <!DOCTYPE html>
+          <meta charset="utf-8">
+          <title>Redirecting to pep440</title>
+          <meta http-equiv="refresh" content="0; URL=./pep440/">
           EOF
 
       - name: Deploy docs
