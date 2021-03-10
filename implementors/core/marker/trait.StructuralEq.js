@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["pep440"] = [{"text":"impl StructuralEq for Version","synthetic":false,"types":[]},{"text":"impl StructuralEq for LocalVersion","synthetic":false,"types":[]},{"text":"impl StructuralEq for PreRelease","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

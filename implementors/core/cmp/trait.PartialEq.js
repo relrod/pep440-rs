@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["pep440"] = [{"text":"impl PartialEq&lt;Version&gt; for Version","synthetic":false,"types":[]},{"text":"impl PartialEq&lt;LocalVersion&gt; for LocalVersion","synthetic":false,"types":[]},{"text":"impl PartialEq&lt;PreRelease&gt; for PreRelease","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
