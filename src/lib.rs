@@ -190,7 +190,7 @@ impl Version {
         let local: Vec<LocalVersion> = captures
             .name("local")
             .map(|local| local.as_str().split(&['-', '_', '.'][..]).collect::<Vec<&str>>())
-            .unwrap_or(vec![])
+            .unwrap_or_default()
             .iter()
             .map(|local| get_local_component(local))
             .collect();
@@ -260,11 +260,17 @@ impl Version {
     /// let ver = Version::parse("2.3.4.alpha8").unwrap();
     /// assert_eq!(ver.pre_str(), "a8".to_string());
     /// ```
+    ///
+    /// ```
+    /// # use pep440::Version;
+    /// let ver = Version::parse("2.3.4").unwrap();
+    /// assert_eq!(ver.pre_str(), "".to_string());
+    /// ```
     pub fn pre_str(&self) -> String {
         self.pre
             .clone() // ?
             .map(|x| format!("{}", x))
-            .unwrap_or("".to_string())
+            .unwrap_or_default()
     }
 
     /// Returns the normalized form of the post-release field for the version.
@@ -293,7 +299,7 @@ impl Version {
     pub fn post_str(&self) -> String {
         self.post
             .map(|x| format!(".post{}", x))
-            .unwrap_or("".to_string())
+            .unwrap_or_default()
     }
 
     /// Returns the normalized form of the dev-release field for the version.
@@ -316,7 +322,7 @@ impl Version {
     pub fn dev_str(&self) -> String {
         self.dev
             .map(|x| format!(".dev{}", x))
-            .unwrap_or("".to_string())
+            .unwrap_or_default()
     }
 
     /// Returns the normalized form of the local field for the version.
@@ -400,11 +406,19 @@ impl fmt::Display for Version {
 }
 
 impl PartialOrd for Version {
+    /// ```
+    /// # use pep440::Version;
+    /// # use std::cmp::Ordering;
+    /// let ver1 = Version::parse("v2.3.4c4.post3.dev6+1.f-3").unwrap();
+    /// let ver2 = Version::parse("v2.3.4pre4.post3.dev6+1.f-3").unwrap();
+    /// assert_eq!(ver1.partial_cmp(&ver2), Some(Ordering::Equal))
+    /// ```
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
+// I'm so sorry.
 impl Ord for Version {
     fn cmp(&self, other: &Self) -> Ordering {
         // Helper functions
@@ -422,26 +436,77 @@ impl Ord for Version {
                 .collect()
         }
 
+        // Check post, then dev, then local.
+        fn post_dev_local(me: &Version, other: &Version) -> Ordering {
+            // If they match, we need to check post/dev/local instead.
+            if me.post != other.post {
+                return me.post.unwrap_or(0).cmp(&other.post.unwrap_or(0))
+            }
+
+            match (me.dev, other.dev) {
+                (Some(_), None) => Ordering::Less,
+                (None, Some(_)) => Ordering::Greater,
+                (Some(ref sv), Some(ref ov)) => sv.cmp(ov),
+                (None, None) => return me.local.cmp(&other.local),
+            }
+        }
+
+        // Real work starts here...
         // Start with epoch
         if self.epoch != other.epoch {
             return self.epoch.cmp(&other.epoch);
         }
 
+        // Next, move on to release...
         let me = drop_right_zeros(&self.release);
         let notme = drop_right_zeros(&other.release);
         if me != notme {
             return me.cmp(&notme);
         }
 
-        // If we're still here, next step is pre-release
-        // Everything else is equal so far.
-        use PreRelease::*;
+        // Now we handle the special case where we have dev, but no pre/post.
+        if self.dev.is_some() & self.pre.is_none() & self.post.is_none() {
+            if other.pre.is_some() | other.post.is_some() {
+                // This is a case like: 1.0dev0 < 1.0a1
+                return Ordering::Less;
+            }
 
-        // First off, if only one is a pre-release, we're done.
+            if other.pre.is_none() & other.post.is_none() & other.dev.is_none() {
+                // This is a case like: 1.0dev0 < 1.0
+                return Ordering::Less;
+            }
+        }
+
+        // And the special case where the other side has dev, but no pre/post.
+        if other.dev.is_some() & other.pre.is_none() & other.post.is_none() {
+            if self.pre.is_some() | self.post.is_some() {
+                // This is a case like: 1.0a1 > 1.0dev0
+                return Ordering::Greater;
+            }
+
+            if self.pre.is_none() & self.post.is_none() & self.dev.is_none() {
+                // This is a case like: 1.0 > 1.0dev0
+                return Ordering::Greater;
+            }
+        }
+
+        // Otherwise, we hit this nasty chain of logic.
+        //
+        // If we have a pre and the other side doesn't, we're clearly less.
+        // If we don't have a pre, but they do, we're clearly greater.
+        //
+        // Otherwise, either we both have pres or neither of us do. If we both
+        // do and they are equal, or we both don't, we do the same thing: Move
+        // on to checking post/dev/local. Otherwise they aren't equal.
+        // In that case, we compare the pres which is enough to determine our
+        // return value.
+        use PreRelease::*;
         match (&self.pre, &other.pre) {
-            (Some(_), None) => return Ordering::Less,
-            (None, Some(_)) => return Ordering::Greater,
-            (Some(pre1), Some(pre2)) => return match (pre1, pre2) {
+            (Some(_), None) => Ordering::Less,
+            (None, Some(_)) => Ordering::Greater,
+            (x, y) if x == y => post_dev_local(self, other),
+            (None, None) => post_dev_local(self, other),
+            (Some(pre1), Some(pre2)) => match (pre1, pre2) {
                 (RC(ref sv), RC(ref ov)) => sv.cmp(ov),
                 (RC(_), _) => Ordering::Greater,
                 (A(ref sv), A(ref ov)) => sv.cmp(ov),
@@ -450,11 +515,9 @@ impl Ord for Version {
                 (B(_), A(_)) => Ordering::Greater,
                 (B(_), _) => Ordering::Less,
             },
-            (None, None) => return Ordering::Equal // TODO
         }
     }
 }
-
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 /// Segments of the "local" part of a version (anything after a `+`).
@@ -471,12 +534,32 @@ pub enum LocalVersion {
 
 impl fmt::Display for LocalVersion {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use LocalVersion::*;
         match self {
-            LocalVersion::NumericComponent(n) => write!(f, "{}", n),
-            LocalVersion::StringComponent(s) => write!(f, "{}", s),
+            NumericComponent(n) => write!(f, "{}", n),
+            StringComponent(s) => write!(f, "{}", s),
         }
     }
 }
+
+impl PartialOrd for LocalVersion {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for LocalVersion {
+    fn cmp(&self, other: &Self) -> Ordering {
+        use LocalVersion::*;
+        match (self, other) {
+            (NumericComponent(n1), NumericComponent(n2)) => n1.cmp(n2),
+            (StringComponent(s1), StringComponent(s2)) => s1.cmp(s2),
+            (NumericComponent(_), StringComponent(_)) => Ordering::Greater,
+            (StringComponent(_), NumericComponent(_)) => Ordering::Less,
+        }
+    }
+}
+
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 /// The pre-release component of a version, such as `rcN`, `bN`, or `aN`.
@@ -657,18 +740,5 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_comparison() {
-        // We need wayyyyy more test cases here. The upstream python packaging
-        // lib generates them in a clever way from a master list. We could try
-        // to emulate that.
-        assert!(Version::parse("1.2.3").unwrap() < Version::parse("1!0.0.1").unwrap());
-        assert!(Version::parse("1.2.2").unwrap() < Version::parse("1.2.3").unwrap());
-        assert!(Version::parse("1.2.2b1").unwrap() < Version::parse("1.2.2rc1").unwrap());
-        assert!(Version::parse("1.2.2a1").unwrap() < Version::parse("1.2.2b1").unwrap());
-        assert!(Version::parse("1.2.2a1").unwrap() < Version::parse("1.2.2rc1").unwrap());
-        assert!(Version::parse("1.2.3a1").unwrap() < Version::parse("1.2.3").unwrap());
-        assert!(Version::parse("1.2.3a1").unwrap() < Version::parse("1.2.4a1").unwrap());
-        assert!(Version::parse("1.2.3a1").unwrap() < Version::parse("1.2.4").unwrap());
-    }
+    // Comparison testing is done in tests/* due to use of an external file.
 }
