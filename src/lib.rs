@@ -20,9 +20,6 @@
 //! * An `is_canonical()` function which can check whether or not a version
 //!   string is in canonical form.
 //! * Tons of tests (copied from `packaging.version`).
-//!
-//! The most urgent thing currently missing is Ord comparison of parsed
-//! versions.
 #[macro_use]
 extern crate lazy_static;
 
