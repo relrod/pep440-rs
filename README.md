@@ -1,5 +1,7 @@
 # pep440
 
+[![tests](https://github.com/relrod/pep440-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/relrod/pep440-rs/actions/workflows/ci.yml)
+
 This is a [PEP440](https://www.python.org/dev/peps/pep-0440/) version parser
 library for/in Rust.
 
