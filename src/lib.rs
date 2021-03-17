@@ -447,7 +447,7 @@ impl Ord for Version {
                 (Some(_), None) => Ordering::Less,
                 (None, Some(_)) => Ordering::Greater,
                 (Some(ref sv), Some(ref ov)) => sv.cmp(ov),
-                (None, None) => return me.local.cmp(&other.local),
+                (None, None) => me.local.cmp(&other.local),
             }
         }
 
