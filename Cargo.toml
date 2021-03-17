@@ -6,7 +6,7 @@ description = "Parse and compare Python PEP440 style version numbers"
 repository = "https://github.com/relrod/pep440-rs"
 license = "BSD-2-Clause OR Apache-2.0"
 keywords = ["pep440", "python", "version", "versions"]
-categories = ["parser-implementations", "value-formatting"]
+categories = ["parser-implementations", "value-formatting", "development-tools"]
 edition = "2018"
 
 [dependencies]
