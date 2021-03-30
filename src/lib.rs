@@ -23,9 +23,12 @@
 #[macro_use]
 extern crate lazy_static;
 
+mod error;
+
 use regex::{Captures, Regex};
 use std::cmp::Ordering;
 use std::fmt;
+use std::str::FromStr;
 
 lazy_static! {
     /// A regex copied from bottom of PEP440 (notated by us) for determining
@@ -516,6 +519,16 @@ impl Ord for Version {
     }
 }
 
+impl FromStr for Version {
+    type Err = error::Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match Version::parse(s) {
+            Some(v) => Ok(v),
+            _ => Err(error::Error::parse_error(s.to_string())),
+        }
+    }
+}
+
 #[derive(Clone, Eq, PartialEq, Debug)]
 /// Segments of the "local" part of a version (anything after a `+`).
 ///
@@ -717,6 +730,25 @@ mod tests {
             assert!(
                 Version::parse(version).is_none(),
                 "Parsed version but should not have: '{}'", version);
+        }
+    }
+
+    #[test]
+    fn test_fromstr() {
+        for version in [CANONICAL_VERSIONS, NON_CANONICAL_VERSIONS].concat() {
+            assert!(
+                Version::from_str(version).is_ok(),
+                "Failed to parse version: '{}'", version);
+        }
+
+        for version in INVALID_VERSIONS {
+            let invalid = Version::from_str(version);
+            assert!(
+                invalid.is_err(),
+                "Parsed version but should not have: '{}'", version);
+            assert_eq!(
+                format!("{}", invalid.unwrap_err()),
+                format!("Failed to parse version: {}", version));
         }
     }
 
