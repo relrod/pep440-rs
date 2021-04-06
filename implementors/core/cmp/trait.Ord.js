@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["pep440"] = [{"text":"impl Ord for Version","synthetic":false,"types":[]},{"text":"impl Ord for LocalVersion","synthetic":false,"types":[]}];
+implementors["pep440"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"pep440/struct.Version.html\" title=\"struct pep440::Version\">Version</a>","synthetic":false,"types":["pep440::Version"]},{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"enum\" href=\"pep440/enum.LocalVersion.html\" title=\"enum pep440::LocalVersion\">LocalVersion</a>","synthetic":false,"types":["pep440::LocalVersion"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

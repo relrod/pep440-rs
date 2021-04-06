@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["pep440"] = [{"text":"impl Freeze for Version","synthetic":true,"types":[]},{"text":"impl Freeze for LocalVersion","synthetic":true,"types":[]},{"text":"impl Freeze for PreRelease","synthetic":true,"types":[]}];
+implementors["pep440"] = [{"text":"impl Freeze for <a class=\"struct\" href=\"pep440/struct.Version.html\" title=\"struct pep440::Version\">Version</a>","synthetic":true,"types":["pep440::Version"]},{"text":"impl Freeze for <a class=\"enum\" href=\"pep440/enum.LocalVersion.html\" title=\"enum pep440::LocalVersion\">LocalVersion</a>","synthetic":true,"types":["pep440::LocalVersion"]},{"text":"impl Freeze for <a class=\"enum\" href=\"pep440/enum.PreRelease.html\" title=\"enum pep440::PreRelease\">PreRelease</a>","synthetic":true,"types":["pep440::PreRelease"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
