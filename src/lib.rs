@@ -27,6 +27,7 @@ mod error;
 
 use regex::{Captures, Regex};
 use std::cmp::Ordering;
+use std::hash::Hash;
 use std::fmt;
 use std::str::FromStr;
 
@@ -75,7 +76,7 @@ $"#).unwrap();
 $"#).unwrap();
 }
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Debug)]
 /// Represents a version parsed as a PEP440-compliant version string.
 ///
 /// Several things to note:
@@ -405,6 +406,14 @@ impl fmt::Display for Version {
     }
 }
 
+impl PartialEq for Version {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other) == Ordering::Equal
+    }
+}
+
+impl Eq for Version {}
+
 impl PartialOrd for Version {
     /// ```
     /// # use pep440::Version;
@@ -418,104 +427,86 @@ impl PartialOrd for Version {
     }
 }
 
-// I'm so sorry.
+// Modelled after packaging.version._cmpkey
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+struct CmpKey<'a> {
+    epoch: u32,
+    trimmed_release: &'a [u32],
+    // possible values:
+    //   (0, 0) -> like version.py's NegativeInfinity
+    //   (1, ...) -> alpha
+    //   (2, ...) -> beta
+    //   (3, ...) -> rc
+    //   (4, 0) -> like version.py's Infinity
+    pre: (u32, u32),
+    // No-post is smaller than .post0, so we map:
+    //   None -> 0, Some(n) -> n+1
+    // which requires a wider type.
+    post: u64,
+    // Widen so we can map no-dev to something larger than u32::MAX
+    dev: u64,
+    local: &'a [LocalVersion],
+}
+
+impl Version {
+    fn cmp_key(&self) -> CmpKey {
+        let epoch = self.epoch;
+
+        // We want to ignore trailing zeros in the release, so make a slice of just the
+        // initial part of the release vector.
+        let mut trimmed_release = &self.release[..];
+        while trimmed_release.ends_with(&[0]) {
+            trimmed_release = &trimmed_release[..trimmed_release.len() - 1];
+        }
+
+        // Quoting from packaging/version.py:
+        // We need to "trick" the sorting algorithm to put 1.0.dev0 before 1.0a0.
+        // We'll do this by abusing the pre segment, but we _only_ want to do this
+        // if there is not a pre or a post segment. If we have one of those then
+        // the normal sorting rules will handle this case correctly.
+        let pre = if self.pre.is_none() && self.post.is_none() && self.dev.is_some() {
+            (0, 0)  // = version.py's NegativeInfinity
+        } else {
+            match self.pre {
+                None => (4, 0),  // = version.py's Infinity
+                Some(PreRelease::A(n)) => (1, n),
+                Some(PreRelease::B(n)) => (2, n),
+                Some(PreRelease::RC(n)) => (3, n),
+            }
+        };
+
+        let post = match self.post {
+            None => 0,
+            Some(n) => (n + 1).into(),
+        };
+
+        let dev = match self.dev {
+            Some(n) => n.into(),
+            None => u64::MAX,
+        };
+
+        let local = &self.local;
+
+        CmpKey {
+            epoch,
+            trimmed_release,
+            pre,
+            post,
+            dev,
+            local,
+        }
+    }
+}
+
 impl Ord for Version {
     fn cmp(&self, other: &Self) -> Ordering {
-        // Helper functions
-        // TODO: What's the better way to do this?
-        // What's even the complexity of this, is each collect or into_iter() O(n)? Halp.
-        fn drop_right_zeros(vec: &[u32]) -> Vec<u32> {
-            vec
-                .to_vec()
-                .into_iter()
-                .rev()
-                .skip_while(|x| *x == 0)
-                .collect::<Vec<u32>>()
-                .into_iter()
-                .rev()
-                .collect()
-        }
+        self.cmp_key().cmp(&other.cmp_key())
+    }
+}
 
-        // Check post, then dev, then local.
-        fn post_dev_local(me: &Version, other: &Version) -> Ordering {
-            // If they match, we need to check post/dev/local instead.
-            if me.post != other.post {
-                return me.post.unwrap_or(0).cmp(&other.post.unwrap_or(0))
-            }
-
-            match (me.dev, other.dev) {
-                (Some(_), None) => Ordering::Less,
-                (None, Some(_)) => Ordering::Greater,
-                (Some(ref sv), Some(ref ov)) => sv.cmp(ov),
-                (None, None) => me.local.cmp(&other.local),
-            }
-        }
-
-        // Real work starts here...
-        // Start with epoch
-        if self.epoch != other.epoch {
-            return self.epoch.cmp(&other.epoch);
-        }
-
-        // Next, move on to release...
-        let me = drop_right_zeros(&self.release);
-        let notme = drop_right_zeros(&other.release);
-        if me != notme {
-            return me.cmp(&notme);
-        }
-
-        // Now we handle the special case where we have dev, but no pre/post.
-        if self.dev.is_some() & self.pre.is_none() & self.post.is_none() {
-            if other.pre.is_some() | other.post.is_some() {
-                // This is a case like: 1.0dev0 < 1.0a1
-                return Ordering::Less;
-            }
-
-            if other.pre.is_none() & other.post.is_none() & other.dev.is_none() {
-                // This is a case like: 1.0dev0 < 1.0
-                return Ordering::Less;
-            }
-        }
-
-        // And the special case where the other side has dev, but no pre/post.
-        if other.dev.is_some() & other.pre.is_none() & other.post.is_none() {
-            if self.pre.is_some() | self.post.is_some() {
-                // This is a case like: 1.0a1 > 1.0dev0
-                return Ordering::Greater;
-            }
-
-            if self.pre.is_none() & self.post.is_none() & self.dev.is_none() {
-                // This is a case like: 1.0 > 1.0dev0
-                return Ordering::Greater;
-            }
-        }
-
-        // Otherwise, we hit this nasty chain of logic.
-        //
-        // If we have a pre and the other side doesn't, we're clearly less.
-        // If we don't have a pre, but they do, we're clearly greater.
-        //
-        // Otherwise, either we both have pres or neither of us do. If we both
-        // do and they are equal, or we both don't, we do the same thing: Move
-        // on to checking post/dev/local. Otherwise they aren't equal.
-        // In that case, we compare the pres which is enough to determine our
-        // return value.
-        use PreRelease::*;
-        match (&self.pre, &other.pre) {
-            (Some(_), None) => Ordering::Less,
-            (None, Some(_)) => Ordering::Greater,
-            (x, y) if x == y => post_dev_local(self, other),
-            (None, None) => post_dev_local(self, other),
-            (Some(pre1), Some(pre2)) => match (pre1, pre2) {
-                (RC(ref sv), RC(ref ov)) => sv.cmp(ov),
-                (RC(_), _) => Ordering::Greater,
-                (A(ref sv), A(ref ov)) => sv.cmp(ov),
-                (A(_), _) => Ordering::Less,
-                (B(ref sv), B(ref ov)) => sv.cmp(ov),
-                (B(_), A(_)) => Ordering::Greater,
-                (B(_), _) => Ordering::Less,
-            },
-        }
+impl Hash for Version {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.cmp_key().hash(state);
     }
 }
 
@@ -529,7 +520,7 @@ impl FromStr for Version {
     }
 }
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Eq, PartialEq, Debug, Hash)]
 /// Segments of the "local" part of a version (anything after a `+`).
 ///
 /// These segments can either be strings or numbers, and we store them in a
