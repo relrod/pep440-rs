@@ -477,7 +477,7 @@ impl Version {
 
         let post = match self.post {
             None => 0,
-            Some(n) => (n + 1).into(),
+            Some(n) => (n as u64) + 1,
         };
 
         let dev = match self.dev {

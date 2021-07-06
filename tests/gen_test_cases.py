@@ -25,6 +25,8 @@ VERSIONS = [
     "1.0.post0",  # https://github.com/relrod/pep440-rs/issues/1
     "1.0.post456.dev34",
     "1.0.post456",
+    # checks for an integer overflow I had in an earlier version of cmp_key computation
+    "1.0.post4294967295",
     "1.1.dev1",
     "1.2+123abc",
     "1.2+123abc456",
