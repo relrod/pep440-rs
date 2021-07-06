@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../pep440/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../pep440/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -765,15 +765,6 @@
 <span id="762">762</span>
 <span id="763">763</span>
 <span id="764">764</span>
-<span id="765">765</span>
-<span id="766">766</span>
-<span id="767">767</span>
-<span id="768">768</span>
-<span id="769">769</span>
-<span id="770">770</span>
-<span id="771">771</span>
-<span id="772">772</span>
-<span id="773">773</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! # pep440</span>
 <span class="doccomment">//!</span>
@@ -803,14 +794,15 @@
 <span class="kw">mod</span> <span class="ident">error</span>;
 
 <span class="kw">use</span> <span class="ident">regex</span>::{<span class="ident">Captures</span>, <span class="ident">Regex</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
+<span class="kw">use</span> <span class="ident">std::cmp::Ordering</span>;
+<span class="kw">use</span> <span class="ident">std::hash::Hash</span>;
+<span class="kw">use</span> <span class="ident">std::fmt</span>;
+<span class="kw">use</span> <span class="ident">std::str::FromStr</span>;
 
-<span class="macro">lazy_static</span><span class="macro">!</span> {
+<span class="macro">lazy_static!</span> {
     <span class="doccomment">/// A regex copied from bottom of PEP440 (notated by us) for determining</span>
     <span class="doccomment">/// whether or not a version is in canonical form.</span>
-    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CANONICAL_RE</span>: <span class="ident">Regex</span> <span class="op">=</span> <span class="ident">Regex</span>::<span class="ident">new</span>(<span class="string">r#&quot;(?xi)
+    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CANONICAL_RE</span>: <span class="ident">Regex</span> <span class="op">=</span> <span class="ident">Regex::new</span>(<span class="string">r#&quot;(?xi)
 ^([1-9][0-9]*!)?                                     # epoch
 (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*                  # release segment
 ((a|b|rc)(0|[1-9][0-9]*))?                           # pre-release
@@ -820,7 +812,7 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
 
     <span class="doccomment">/// A regex copied from the bottom of PEP440 and wrapped with `^` / `$`</span>
     <span class="doccomment">/// anchors, used for pulling out components of the given version number.</span>
-    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">VERSION_RE</span>: <span class="ident">Regex</span> <span class="op">=</span> <span class="ident">Regex</span>::<span class="ident">new</span>(<span class="string">r#&quot;(?xi)
+    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">VERSION_RE</span>: <span class="ident">Regex</span> <span class="op">=</span> <span class="ident">Regex::new</span>(<span class="string">r#&quot;(?xi)
 ^v?
 (?:
     (?:(?P&lt;epoch&gt;[0-9]+)!)?                           # epoch
@@ -852,7 +844,7 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
 $&quot;#</span>).<span class="ident">unwrap</span>();
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="doccomment">/// Represents a version parsed as a PEP440-compliant version string.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Several things to note:</span>
@@ -897,14 +889,14 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
 
         <span class="kw">fn</span> <span class="ident">pre_release_constructor</span>(<span class="ident">label</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">fn</span>(<span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PreRelease</span><span class="op">&gt;</span> {
             <span class="kw">match</span> <span class="ident">label</span> {
-                <span class="string">&quot;a&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease</span>::<span class="ident">A</span>),
-                <span class="string">&quot;alpha&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease</span>::<span class="ident">A</span>),
-                <span class="string">&quot;b&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease</span>::<span class="ident">B</span>),
-                <span class="string">&quot;beta&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease</span>::<span class="ident">B</span>),
-                <span class="string">&quot;c&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease</span>::<span class="ident">RC</span>),
-                <span class="string">&quot;rc&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease</span>::<span class="ident">RC</span>),
-                <span class="string">&quot;pre&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease</span>::<span class="ident">RC</span>),
-                <span class="string">&quot;preview&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease</span>::<span class="ident">RC</span>),
+                <span class="string">&quot;a&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease::A</span>),
+                <span class="string">&quot;alpha&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease::A</span>),
+                <span class="string">&quot;b&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease::B</span>),
+                <span class="string">&quot;beta&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease::B</span>),
+                <span class="string">&quot;c&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease::RC</span>),
+                <span class="string">&quot;rc&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease::RC</span>),
+                <span class="string">&quot;pre&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease::RC</span>),
+                <span class="string">&quot;preview&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">PreRelease::RC</span>),
                 <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>
             }
         }
@@ -943,9 +935,9 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
 
         <span class="kw">fn</span> <span class="ident">get_local_component</span>(<span class="ident">component</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LocalVersion</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">num</span>) <span class="op">=</span> <span class="ident">component</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>() {
-                <span class="ident">LocalVersion</span>::<span class="ident">NumericComponent</span>(<span class="ident">num</span>)
+                <span class="ident">LocalVersion::NumericComponent</span>(<span class="ident">num</span>)
             } <span class="kw">else</span> {
-                <span class="ident">LocalVersion</span>::<span class="ident">StringComponent</span>(<span class="ident">component</span>.<span class="ident">to_lowercase</span>())
+                <span class="ident">LocalVersion::StringComponent</span>(<span class="ident">component</span>.<span class="ident">to_lowercase</span>())
             }
         }
 
@@ -990,7 +982,7 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">epoch_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">epoch</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}!&quot;</span>, <span class="self">self</span>.<span class="ident">epoch</span>)
+            <span class="macro">format!</span>(<span class="string">&quot;{}!&quot;</span>, <span class="self">self</span>.<span class="ident">epoch</span>)
         } <span class="kw">else</span> {
             <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()
         }
@@ -1046,7 +1038,7 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pre_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">pre</span>
             .<span class="ident">clone</span>() <span class="comment">// ?</span>
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">x</span>))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">x</span>))
             .<span class="ident">unwrap_or_default</span>()
     }
 
@@ -1075,7 +1067,7 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">post_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">post</span>
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;.post{}&quot;</span>, <span class="ident">x</span>))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;.post{}&quot;</span>, <span class="ident">x</span>))
             .<span class="ident">unwrap_or_default</span>()
     }
 
@@ -1098,7 +1090,7 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dev_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">dev</span>
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;.dev{}&quot;</span>, <span class="ident">x</span>))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;.dev{}&quot;</span>, <span class="ident">x</span>))
             .<span class="ident">unwrap_or_default</span>()
     }
 
@@ -1122,11 +1114,11 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">local_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">glued</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">local</span>
             .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">x</span>))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">x</span>))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>()
             .<span class="ident">join</span>(<span class="string">&quot;.&quot;</span>);
         <span class="kw">if</span> <span class="op">!</span><span class="ident">glued</span>.<span class="ident">is_empty</span>() {
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;+{}&quot;</span>, <span class="ident">glued</span>)
+            <span class="macro">format!</span>(<span class="string">&quot;+{}&quot;</span>, <span class="ident">glued</span>)
         } <span class="kw">else</span> {
             <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()
         }
@@ -1143,7 +1135,7 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="doccomment">/// assert_eq!(ver.public_str(), &quot;2.3.4rc4.post3.dev6&quot;.to_string());</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">public_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(
+        <span class="macro">format!</span>(
             <span class="string">&quot;{}{}{}{}{}&quot;</span>,
             <span class="self">self</span>.<span class="ident">epoch_str</span>(),
             <span class="self">self</span>.<span class="ident">release_str</span>(),
@@ -1165,22 +1157,30 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="doccomment">/// assert_eq!(ver.normalize(), &quot;2.3.4rc4.post3.dev6+1.f.3&quot;.to_string());</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">normalize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="self">self</span>.<span class="ident">public_str</span>(), <span class="self">self</span>.<span class="ident">local_str</span>())
+        <span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="self">self</span>.<span class="ident">public_str</span>(), <span class="self">self</span>.<span class="ident">local_str</span>())
     }
 }
 
 <span class="doccomment">/// This implementation is returns the normalized version of the version.</span>
 <span class="doccomment">/// It is equivalent to calling `normalize()` on the version.</span>
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Version</span> {
+<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Version</span> {
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # use pep440::Version;</span>
     <span class="doccomment">/// let ver = Version::parse(&quot;v2.3.4c4.post3.dev6+1.f-3&quot;).unwrap();</span>
     <span class="doccomment">/// assert_eq!(format!(&quot;{}&quot;, ver), ver.normalize());</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">normalize</span>())
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">normalize</span>())
     }
 }
+
+<span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Version</span> {
+    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">cmp</span>(<span class="ident">other</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">Ordering::Equal</span>
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">Version</span> {}
 
 <span class="kw">impl</span> <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="ident">Version</span> {
     <span class="doccomment">/// ```</span>
@@ -1195,118 +1195,100 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     }
 }
 
-<span class="comment">// I&#39;m so sorry.</span>
+<span class="comment">// Modelled after packaging.version._cmpkey</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">struct</span> <span class="ident">CmpKey</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="ident">epoch</span>: <span class="ident">u32</span>,
+    <span class="ident">trimmed_release</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u32</span>],
+    <span class="comment">// possible values:</span>
+    <span class="comment">//   (0, 0) -&gt; like version.py&#39;s NegativeInfinity</span>
+    <span class="comment">//   (1, ...) -&gt; alpha</span>
+    <span class="comment">//   (2, ...) -&gt; beta</span>
+    <span class="comment">//   (3, ...) -&gt; rc</span>
+    <span class="comment">//   (4, 0) -&gt; like version.py&#39;s Infinity</span>
+    <span class="ident">pre</span>: (<span class="ident">u32</span>, <span class="ident">u32</span>),
+    <span class="comment">// No-post is smaller than .post0, so we map:</span>
+    <span class="comment">//   None -&gt; 0, Some(n) -&gt; n+1</span>
+    <span class="comment">// which requires a wider type.</span>
+    <span class="ident">post</span>: <span class="ident">u64</span>,
+    <span class="comment">// Widen so we can map no-dev to something larger than u32::MAX</span>
+    <span class="ident">dev</span>: <span class="ident">u64</span>,
+    <span class="ident">local</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">LocalVersion</span>],
+}
+
+<span class="kw">impl</span> <span class="ident">Version</span> {
+    <span class="kw">fn</span> <span class="ident">cmp_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CmpKey</span> {
+        <span class="kw">let</span> <span class="ident">epoch</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">epoch</span>;
+
+        <span class="comment">// We want to ignore trailing zeros in the release, so make a slice of just the</span>
+        <span class="comment">// initial part of the release vector.</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trimmed_release</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">release</span>[..];
+        <span class="kw">while</span> <span class="ident">trimmed_release</span>.<span class="ident">ends_with</span>(<span class="kw-2">&amp;</span>[<span class="number">0</span>]) {
+            <span class="ident">trimmed_release</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">trimmed_release</span>[..<span class="ident">trimmed_release</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>];
+        }
+
+        <span class="comment">// Quoting from packaging/version.py:</span>
+        <span class="comment">// We need to &quot;trick&quot; the sorting algorithm to put 1.0.dev0 before 1.0a0.</span>
+        <span class="comment">// We&#39;ll do this by abusing the pre segment, but we _only_ want to do this</span>
+        <span class="comment">// if there is not a pre or a post segment. If we have one of those then</span>
+        <span class="comment">// the normal sorting rules will handle this case correctly.</span>
+        <span class="kw">let</span> <span class="ident">pre</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">pre</span>.<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">post</span>.<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">dev</span>.<span class="ident">is_some</span>() {
+            (<span class="number">0</span>, <span class="number">0</span>)  <span class="comment">// = version.py&#39;s NegativeInfinity</span>
+        } <span class="kw">else</span> {
+            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre</span> {
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="number">4</span>, <span class="number">0</span>),  <span class="comment">// = version.py&#39;s Infinity</span>
+                <span class="prelude-val">Some</span>(<span class="ident">PreRelease::A</span>(<span class="ident">n</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="number">1</span>, <span class="ident">n</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">PreRelease::B</span>(<span class="ident">n</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="number">2</span>, <span class="ident">n</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">PreRelease::RC</span>(<span class="ident">n</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="number">3</span>, <span class="ident">n</span>),
+            }
+        };
+
+        <span class="kw">let</span> <span class="ident">post</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">post</span> {
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">n</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="op">+</span> <span class="number">1</span>,
+        };
+
+        <span class="kw">let</span> <span class="ident">dev</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">dev</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>.<span class="ident">into</span>(),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u64::MAX</span>,
+        };
+
+        <span class="kw">let</span> <span class="ident">local</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">local</span>;
+
+        <span class="ident">CmpKey</span> {
+            <span class="ident">epoch</span>,
+            <span class="ident">trimmed_release</span>,
+            <span class="ident">pre</span>,
+            <span class="ident">post</span>,
+            <span class="ident">dev</span>,
+            <span class="ident">local</span>,
+        }
+    }
+}
+
 <span class="kw">impl</span> <span class="ident">Ord</span> <span class="kw">for</span> <span class="ident">Version</span> {
     <span class="kw">fn</span> <span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ordering</span> {
-        <span class="comment">// Helper functions</span>
-        <span class="comment">// TODO: What&#39;s the better way to do this?</span>
-        <span class="comment">// What&#39;s even the complexity of this, is each collect or into_iter() O(n)? Halp.</span>
-        <span class="kw">fn</span> <span class="ident">drop_right_zeros</span>(<span class="ident">vec</span>: <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-            <span class="ident">vec</span>
-                .<span class="ident">to_vec</span>()
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">rev</span>()
-                .<span class="ident">skip_while</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>)
-                .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>()
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">rev</span>()
-                .<span class="ident">collect</span>()
-        }
+        <span class="self">self</span>.<span class="ident">cmp_key</span>().<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">cmp_key</span>())
+    }
+}
 
-        <span class="comment">// Check post, then dev, then local.</span>
-        <span class="kw">fn</span> <span class="ident">post_dev_local</span>(<span class="ident">me</span>: <span class="kw-2">&amp;</span><span class="ident">Version</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Version</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ordering</span> {
-            <span class="comment">// If they match, we need to check post/dev/local instead.</span>
-            <span class="kw">if</span> <span class="ident">me</span>.<span class="ident">post</span> <span class="op">!</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">post</span> {
-                <span class="kw">return</span> <span class="ident">me</span>.<span class="ident">post</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>).<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">post</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>))
-            }
-
-            <span class="kw">match</span> (<span class="ident">me</span>.<span class="ident">dev</span>, <span class="ident">other</span>.<span class="ident">dev</span>) {
-                (<span class="prelude-val">Some</span>(<span class="kw">_</span>), <span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Less</span>,
-                (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Greater</span>,
-                (<span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">sv</span>), <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">ov</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sv</span>.<span class="ident">cmp</span>(<span class="ident">ov</span>),
-                (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">me</span>.<span class="ident">local</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">local</span>),
-            }
-        }
-
-        <span class="comment">// Real work starts here...</span>
-        <span class="comment">// Start with epoch</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">epoch</span> <span class="op">!</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">epoch</span> {
-            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">epoch</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">epoch</span>);
-        }
-
-        <span class="comment">// Next, move on to release...</span>
-        <span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">drop_right_zeros</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">release</span>);
-        <span class="kw">let</span> <span class="ident">notme</span> <span class="op">=</span> <span class="ident">drop_right_zeros</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">release</span>);
-        <span class="kw">if</span> <span class="ident">me</span> <span class="op">!</span><span class="op">=</span> <span class="ident">notme</span> {
-            <span class="kw">return</span> <span class="ident">me</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">notme</span>);
-        }
-
-        <span class="comment">// Now we handle the special case where we have dev, but no pre/post.</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">dev</span>.<span class="ident">is_some</span>() <span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">pre</span>.<span class="ident">is_none</span>() <span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">post</span>.<span class="ident">is_none</span>() {
-            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">pre</span>.<span class="ident">is_some</span>() <span class="op">|</span> <span class="ident">other</span>.<span class="ident">post</span>.<span class="ident">is_some</span>() {
-                <span class="comment">// This is a case like: 1.0dev0 &lt; 1.0a1</span>
-                <span class="kw">return</span> <span class="ident">Ordering</span>::<span class="ident">Less</span>;
-            }
-
-            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">pre</span>.<span class="ident">is_none</span>() <span class="op">&amp;</span> <span class="ident">other</span>.<span class="ident">post</span>.<span class="ident">is_none</span>() <span class="op">&amp;</span> <span class="ident">other</span>.<span class="ident">dev</span>.<span class="ident">is_none</span>() {
-                <span class="comment">// This is a case like: 1.0dev0 &lt; 1.0</span>
-                <span class="kw">return</span> <span class="ident">Ordering</span>::<span class="ident">Less</span>;
-            }
-        }
-
-        <span class="comment">// And the special case where the other side has dev, but no pre/post.</span>
-        <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">dev</span>.<span class="ident">is_some</span>() <span class="op">&amp;</span> <span class="ident">other</span>.<span class="ident">pre</span>.<span class="ident">is_none</span>() <span class="op">&amp;</span> <span class="ident">other</span>.<span class="ident">post</span>.<span class="ident">is_none</span>() {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">pre</span>.<span class="ident">is_some</span>() <span class="op">|</span> <span class="self">self</span>.<span class="ident">post</span>.<span class="ident">is_some</span>() {
-                <span class="comment">// This is a case like: 1.0a1 &gt; 1.0dev0</span>
-                <span class="kw">return</span> <span class="ident">Ordering</span>::<span class="ident">Greater</span>;
-            }
-
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">pre</span>.<span class="ident">is_none</span>() <span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">post</span>.<span class="ident">is_none</span>() <span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">dev</span>.<span class="ident">is_none</span>() {
-                <span class="comment">// This is a case like: 1.0 &gt; 1.0dev0</span>
-                <span class="kw">return</span> <span class="ident">Ordering</span>::<span class="ident">Greater</span>;
-            }
-        }
-
-        <span class="comment">// Otherwise, we hit this nasty chain of logic.</span>
-        <span class="comment">//</span>
-        <span class="comment">// If we have a pre and the other side doesn&#39;t, we&#39;re clearly less.</span>
-        <span class="comment">// If we don&#39;t have a pre, but they do, we&#39;re clearly greater.</span>
-        <span class="comment">//</span>
-        <span class="comment">// Otherwise, either we both have pres or neither of us do. If we both</span>
-        <span class="comment">// do and they are equal, or we both don&#39;t, we do the same thing: Move</span>
-        <span class="comment">// on to checking post/dev/local. Otherwise they aren&#39;t equal.</span>
-        <span class="comment">// In that case, we compare the pres which is enough to determine our</span>
-        <span class="comment">// return value.</span>
-        <span class="kw">use</span> <span class="ident">PreRelease</span>::<span class="kw-2">*</span>;
-        <span class="kw">match</span> (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pre</span>, <span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">pre</span>) {
-            (<span class="prelude-val">Some</span>(<span class="kw">_</span>), <span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Less</span>,
-            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Greater</span>,
-            (<span class="ident">x</span>, <span class="ident">y</span>) <span class="kw">if</span> <span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="ident">y</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">post_dev_local</span>(<span class="self">self</span>, <span class="ident">other</span>),
-            (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">post_dev_local</span>(<span class="self">self</span>, <span class="ident">other</span>),
-            (<span class="prelude-val">Some</span>(<span class="ident">pre1</span>), <span class="prelude-val">Some</span>(<span class="ident">pre2</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> (<span class="ident">pre1</span>, <span class="ident">pre2</span>) {
-                (<span class="ident">RC</span>(<span class="kw-2">ref</span> <span class="ident">sv</span>), <span class="ident">RC</span>(<span class="kw-2">ref</span> <span class="ident">ov</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sv</span>.<span class="ident">cmp</span>(<span class="ident">ov</span>),
-                (<span class="ident">RC</span>(<span class="kw">_</span>), <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Greater</span>,
-                (<span class="ident">A</span>(<span class="kw-2">ref</span> <span class="ident">sv</span>), <span class="ident">A</span>(<span class="kw-2">ref</span> <span class="ident">ov</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sv</span>.<span class="ident">cmp</span>(<span class="ident">ov</span>),
-                (<span class="ident">A</span>(<span class="kw">_</span>), <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Less</span>,
-                (<span class="ident">B</span>(<span class="kw-2">ref</span> <span class="ident">sv</span>), <span class="ident">B</span>(<span class="kw-2">ref</span> <span class="ident">ov</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sv</span>.<span class="ident">cmp</span>(<span class="ident">ov</span>),
-                (<span class="ident">B</span>(<span class="kw">_</span>), <span class="ident">A</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Greater</span>,
-                (<span class="ident">B</span>(<span class="kw">_</span>), <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Less</span>,
-            },
-        }
+<span class="kw">impl</span> <span class="ident">Hash</span> <span class="kw">for</span> <span class="ident">Version</span> {
+    <span class="kw">fn</span> <span class="ident">hash</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">std::hash::Hasher</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">H</span>) {
+        <span class="self">self</span>.<span class="ident">cmp_key</span>().<span class="ident">hash</span>(<span class="ident">state</span>);
     }
 }
 
 <span class="kw">impl</span> <span class="ident">FromStr</span> <span class="kw">for</span> <span class="ident">Version</span> {
-    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">error</span>::<span class="ident">Error</span>;
-    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span>::<span class="prelude-val">Err</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">Version</span>::<span class="ident">parse</span>(<span class="ident">s</span>) {
+    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">error::Error</span>;
+    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span><span class="ident">::Err</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="ident">Version::parse</span>(<span class="ident">s</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">v</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">error</span>::<span class="ident">Error</span>::<span class="ident">parse_error</span>(<span class="ident">s</span>.<span class="ident">to_string</span>())),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">error::Error::parse_error</span>(<span class="ident">s</span>.<span class="ident">to_string</span>())),
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>, <span class="ident">Hash</span>)]</span>
 <span class="doccomment">/// Segments of the &quot;local&quot; part of a version (anything after a `+`).</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// These segments can either be strings or numbers, and we store them in a</span>
@@ -1319,12 +1301,12 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="ident">StringComponent</span>(<span class="ident">String</span>),
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">LocalVersion</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">LocalVersion</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
         <span class="kw">use</span> <span class="ident">LocalVersion</span>::<span class="kw-2">*</span>;
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">NumericComponent</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">n</span>),
-            <span class="ident">StringComponent</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">s</span>),
+            <span class="ident">NumericComponent</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">n</span>),
+            <span class="ident">StringComponent</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">s</span>),
         }
     }
 }
@@ -1341,8 +1323,8 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
         <span class="kw">match</span> (<span class="self">self</span>, <span class="ident">other</span>) {
             (<span class="ident">NumericComponent</span>(<span class="ident">n1</span>), <span class="ident">NumericComponent</span>(<span class="ident">n2</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n1</span>.<span class="ident">cmp</span>(<span class="ident">n2</span>),
             (<span class="ident">StringComponent</span>(<span class="ident">s1</span>), <span class="ident">StringComponent</span>(<span class="ident">s2</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s1</span>.<span class="ident">cmp</span>(<span class="ident">s2</span>),
-            (<span class="ident">NumericComponent</span>(<span class="kw">_</span>), <span class="ident">StringComponent</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Greater</span>,
-            (<span class="ident">StringComponent</span>(<span class="kw">_</span>), <span class="ident">NumericComponent</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering</span>::<span class="ident">Less</span>,
+            (<span class="ident">NumericComponent</span>(<span class="kw">_</span>), <span class="ident">StringComponent</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering::Greater</span>,
+            (<span class="ident">StringComponent</span>(<span class="kw">_</span>), <span class="ident">NumericComponent</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Ordering::Less</span>,
         }
     }
 }
@@ -1367,12 +1349,12 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="ident">B</span>(<span class="ident">u32</span>),
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">PreRelease</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">PreRelease</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">PreRelease</span>::<span class="ident">RC</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;rc{}&quot;</span>, <span class="ident">v</span>),
-            <span class="ident">PreRelease</span>::<span class="ident">A</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;a{}&quot;</span>, <span class="ident">v</span>),
-            <span class="ident">PreRelease</span>::<span class="ident">B</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;b{}&quot;</span>, <span class="ident">v</span>),
+            <span class="ident">PreRelease::RC</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;rc{}&quot;</span>, <span class="ident">v</span>),
+            <span class="ident">PreRelease::A</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;a{}&quot;</span>, <span class="ident">v</span>),
+            <span class="ident">PreRelease::B</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;b{}&quot;</span>, <span class="ident">v</span>),
         }
     }
 }
@@ -1483,14 +1465,14 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_is_canonical</span>() {
         <span class="kw">for</span> <span class="ident">version</span> <span class="kw">in</span> <span class="ident">CANONICAL_VERSIONS</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(
-                <span class="ident">Version</span>::<span class="ident">is_canonical</span>(<span class="ident">version</span>),
+            <span class="macro">assert!</span>(
+                <span class="ident">Version::is_canonical</span>(<span class="ident">version</span>),
                 <span class="string">&quot;Expected &#39;{}&#39; to be valid&quot;</span>, <span class="ident">version</span>);
         }
 
         <span class="kw">for</span> <span class="ident">version</span> <span class="kw">in</span> <span class="ident">NON_CANONICAL_VERSIONS</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(
-                <span class="op">!</span><span class="ident">Version</span>::<span class="ident">is_canonical</span>(<span class="ident">version</span>),
+            <span class="macro">assert!</span>(
+                <span class="op">!</span><span class="ident">Version::is_canonical</span>(<span class="ident">version</span>),
                 <span class="string">&quot;Expected &#39;{}&#39; to NOT be valid&quot;</span>, <span class="ident">version</span>);
         }
     }
@@ -1498,14 +1480,14 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse</span>() {
         <span class="kw">for</span> <span class="ident">version</span> <span class="kw">in</span> [<span class="ident">CANONICAL_VERSIONS</span>, <span class="ident">NON_CANONICAL_VERSIONS</span>].<span class="ident">concat</span>() {
-            <span class="macro">assert</span><span class="macro">!</span>(
-                <span class="ident">Version</span>::<span class="ident">parse</span>(<span class="ident">version</span>).<span class="ident">is_some</span>(),
+            <span class="macro">assert!</span>(
+                <span class="ident">Version::parse</span>(<span class="ident">version</span>).<span class="ident">is_some</span>(),
                 <span class="string">&quot;Failed to parse version: &#39;{}&#39;&quot;</span>, <span class="ident">version</span>);
         }
 
         <span class="kw">for</span> <span class="ident">version</span> <span class="kw">in</span> <span class="ident">INVALID_VERSIONS</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(
-                <span class="ident">Version</span>::<span class="ident">parse</span>(<span class="ident">version</span>).<span class="ident">is_none</span>(),
+            <span class="macro">assert!</span>(
+                <span class="ident">Version::parse</span>(<span class="ident">version</span>).<span class="ident">is_none</span>(),
                 <span class="string">&quot;Parsed version but should not have: &#39;{}&#39;&quot;</span>, <span class="ident">version</span>);
         }
     }
@@ -1513,30 +1495,30 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_fromstr</span>() {
         <span class="kw">for</span> <span class="ident">version</span> <span class="kw">in</span> [<span class="ident">CANONICAL_VERSIONS</span>, <span class="ident">NON_CANONICAL_VERSIONS</span>].<span class="ident">concat</span>() {
-            <span class="macro">assert</span><span class="macro">!</span>(
-                <span class="ident">Version</span>::<span class="ident">from_str</span>(<span class="ident">version</span>).<span class="ident">is_ok</span>(),
+            <span class="macro">assert!</span>(
+                <span class="ident">Version::from_str</span>(<span class="ident">version</span>).<span class="ident">is_ok</span>(),
                 <span class="string">&quot;Failed to parse version: &#39;{}&#39;&quot;</span>, <span class="ident">version</span>);
         }
 
         <span class="kw">for</span> <span class="ident">version</span> <span class="kw">in</span> <span class="ident">INVALID_VERSIONS</span> {
-            <span class="kw">let</span> <span class="ident">invalid</span> <span class="op">=</span> <span class="ident">Version</span>::<span class="ident">from_str</span>(<span class="ident">version</span>);
-            <span class="macro">assert</span><span class="macro">!</span>(
+            <span class="kw">let</span> <span class="ident">invalid</span> <span class="op">=</span> <span class="ident">Version::from_str</span>(<span class="ident">version</span>);
+            <span class="macro">assert!</span>(
                 <span class="ident">invalid</span>.<span class="ident">is_err</span>(),
                 <span class="string">&quot;Parsed version but should not have: &#39;{}&#39;&quot;</span>, <span class="ident">version</span>);
-            <span class="macro">assert_eq</span><span class="macro">!</span>(
-                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">invalid</span>.<span class="ident">unwrap_err</span>()),
-                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Failed to parse version: {}&quot;</span>, <span class="ident">version</span>));
+            <span class="macro">assert_eq!</span>(
+                <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">invalid</span>.<span class="ident">unwrap_err</span>()),
+                <span class="macro">format!</span>(<span class="string">&quot;Failed to parse version: {}&quot;</span>, <span class="ident">version</span>));
         }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_normalization</span>() {
         <span class="kw">for</span> (<span class="ident">input</span>, <span class="ident">expected</span>) <span class="kw">in</span> <span class="ident">NORMALIZATION</span> {
-            <span class="kw">let</span> <span class="ident">ver</span> <span class="op">=</span> <span class="ident">Version</span>::<span class="ident">parse</span>(<span class="ident">input</span>);
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">ver</span>.<span class="ident">is_some</span>(), <span class="string">&quot;Failed to parse version: {}&quot;</span>, <span class="ident">input</span>);
+            <span class="kw">let</span> <span class="ident">ver</span> <span class="op">=</span> <span class="ident">Version::parse</span>(<span class="ident">input</span>);
+            <span class="macro">assert!</span>(<span class="ident">ver</span>.<span class="ident">is_some</span>(), <span class="string">&quot;Failed to parse version: {}&quot;</span>, <span class="ident">input</span>);
             <span class="kw">let</span> <span class="ident">normalized</span> <span class="op">=</span> <span class="ident">ver</span>.<span class="ident">unwrap</span>().<span class="ident">normalize</span>();
             <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">expected</span>.<span class="ident">to_string</span>();
-            <span class="macro">assert_eq</span><span class="macro">!</span>(
+            <span class="macro">assert_eq!</span>(
                 <span class="ident">normalized</span>,
                 <span class="ident">expected</span>,
                 <span class="string">&quot;input={}, expected={}, actual={}&quot;</span>,
@@ -1549,5 +1531,5 @@ $&quot;#</span>).<span class="ident">unwrap</span>();
     <span class="comment">// Comparison testing is done in tests/* due to use of an external file.</span>
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pep440" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pep440" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>
