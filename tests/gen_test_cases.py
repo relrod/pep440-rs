@@ -2,13 +2,14 @@
 
 import itertools
 
-# This is all taken from pypa/packaging, test_version.py
+# This was initially taken from pypa/packaging, test_version.py, then some bits added
 
 VERSIONS = [
     # Implicit epoch of 0
     "1.0.dev456",
     "1.0a1",
     "1.0a2.dev456",
+    "1a2.dev567",  # https://github.com/relrod/pep440-rs/issues/2
     "1.0a12.dev456",
     "1.0a12",
     "1.0b1.dev456",
@@ -21,6 +22,7 @@ VERSIONS = [
     "1.0rc2",
     "1.0c3",
     "1.0",
+    "1.0.post0",  # https://github.com/relrod/pep440-rs/issues/1
     "1.0.post456.dev34",
     "1.0.post456",
     "1.1.dev1",
