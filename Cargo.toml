@@ -1,6 +1,6 @@
 [package]
 name = "pep440"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Rick Elrod <relrod@redhat.com>"]
 description = "Parse and compare Python PEP440 style version numbers"
 repository = "https://github.com/relrod/pep440-rs"
